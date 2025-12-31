@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ULTIMATE++ New Year 2026 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:radial-gradient(circle at bottom,#2a0040,#000);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Montserrat',sans-serif;
+  color:white;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+.container{
+  z-index:2;
+  text-align:center;
+  max-width:92%;
+}
+
+h1{
+  font-family:'Pacifico',cursive;
+  font-size:3.4rem;
+  color:#ffd1dc;
+  text-shadow:0 0 30px hotpink;
+  margin-bottom:20px;
+  transition:.4s;
+}
+
+#countdown{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  margin-bottom:22px;
+  transition:1s;
+}
+
+.time{
+  background:rgba(255,182,193,.2);
+  padding:16px 22px;
+  border-radius:18px;
+  min-width:80px;
+  backdrop-filter:blur(8px);
+}
+
+.time span{
+  font-size:2.2rem;
+  font-weight:700;
+  display:block;
+}
+
+#message{
+  opacity:0;
+  font-size:1.25rem;
+  line-height:1.7;
+  transition:2s;
+  text-shadow:0 0 15px pink;
+}
+
+button{
+  margin-top:20px;
+  padding:14px 38px;
+  border:none;
+  border-radius:40px;
+  background:linear-gradient(45deg,#ff5fa2,#ff8acb);
+  color:white;
+  font-size:1.05rem;
+  cursor:pointer;
+  box-shadow:0 0 30px rgba(255,105,180,.9);
+}
+
+.shake{
+  animation:shake .35s infinite;
+}
+@keyframes shake{
+  0%{transform:translate(0)}
+  25%{transform:translate(3px,-3px)}
+  50%{transform:translate(-3px,3px)}
+  75%{transform:translate(3px,3px)}
+  100%{transform:translate(0)}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fx"></canvas>
+
+<div class="container" id="box">
+  <h1 id="title">💗 Countdown 2026 💗</h1>
+
+  <div id="countdown">
+    <div class="time"><span id="days">0</span>D</div>
+    <div class="time"><span id="hours">0</span>H</div>
+    <div class="time"><span id="minutes">0</span>M</div>
+    <div class="time"><span id="seconds">0</span>S</div>
+  </div>
+
+  <div id="message">
+    🌸 Chúc Hoàng Anh một năm mới thật dịu dàng<br>
+    Mọi mệt mỏi sẽ tan như pháo hoa trên trời ✨<br>
+    Chỉ còn lại những điều ấm áp 💖<br><br>
+    — From someone who cares —
+  </div>
+
+  <button onclick="forceBoom()">💥 NỔ NGAY (TEST)</button>
+</div>
+
+<!-- AUDIO -->
+<audio id="bgm" src="happy_new_year.mp3" loop></audio>
+<audio id="boom" src="card.mp3"></audio>
+<audio id="tick" src="real-tick.mp3"></audio>
+
+<script>
+/* ================= COUNTDOWN ================= */
+const target = new Date("January 1, 2026 00:00:00").getTime();
+const title = document.getElementById("title");
+const msg = document.getElementById("message");
+const cd = document.getElementById("countdown");
+const box = document.getElementById("box");
+const tick = document.getElementById("tick");
+
+const timer = setInterval(update,1000);
+update();
+
+function playTick(){
+  tick.currentTime = 0;
+  tick.play();
+}
+
+function update(){
+  const diff = target - Date.now();
+
+  if(diff <= 0){
+    clearInterval(timer);
+    tick.pause();
+    tick.currentTime = 0;
+    cd.style.opacity = 0;
+    reveal();
+    return;
+  }
+
+  playTick(); // ⏰ tick mỗi giây
+
+  if(diff <= 3000){
+    title.innerText = Math.ceil(diff/1000);
+    title.style.fontSize = "5.8rem";
+    box.classList.add("shake");
+  }
+
+  days.textContent = Math.floor(diff / 86400000);
+  hours.textContent = Math.floor(diff / 3600000) % 24;
+  minutes.textContent = Math.floor(diff / 60000) % 60;
+  seconds.textContent = Math.floor(diff / 1000) % 60;
+}
+
+/* ================= CANVAS – PHÁO HOA TIM ================= */
+const c = document.getElementById("fx");
+const ctx = c.getContext("2d");
+c.width = innerWidth;
+c.height = innerHeight;
+
+let hearts = [];
+let started = false;
+
+function heartShape(t){
+  return {
+    x:16*Math.pow(Math.sin(t),3),
+    y:-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
+  }
+}
+
+function spawnHeart(x,y){
+  for(let t=0;t<Math.PI*2;t+=0.2){
+    const h=heartShape(t);
+    hearts.push({
+      x:x+h.x*3,
+      y:y+h.y*3,
+      vx:(Math.random()-.5)*1.2,
+      vy:(Math.random()-.5)*1.2,
+      a:1
+    });
+  }
+}
+
+function reveal(){
+  if(started) return;
+  started = true;
+
+  bgm.play();
+  boom.play();
+
+  title.innerText="💖 HAPPY NEW YEAR 2026 💖";
+  title.style.fontSize="3.6rem";
+  msg.style.opacity=1;
+  box.classList.remove("shake");
+
+  setInterval(()=>{
+    spawnHeart(
+      Math.random()*c.width,
+      Math.random()*c.height/2
+    );
+  },900);
+}
+
+function animate(){
+  ctx.clearRect(0,0,c.width,c.height);
+
+  hearts.forEach((p,i)=>{
+    p.x += p.vx;
+    p.y += p.vy;
+    p.a -= 0.01;
+
+    ctx.globalAlpha = p.a;
+    ctx.fillStyle = "#ff9acb";
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fill();
+
+    if(p.a <= 0) hearts.splice(i,1);
+  });
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.onresize = ()=>{c.width=innerWidth;c.height=innerHeight};
+function forceBoom(){ reveal(); }
+</script>
+
+</body>
+</html>
